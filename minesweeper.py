@@ -209,24 +209,23 @@ class MinesweeperAI():
                     continue
 
                 # Update count if cell in bounds and is mine
-                if 0 <= i < self.height and 0 <= j < self.width and (i,j) not in (self.mines, self.safes):
+                if 0 <= i < self.height and 0 <= j < self.width and (i,j) not in (self.mines or self.safes):
                     surrounding_cells.add((i,j))
 
         sentence = Sentence(surrounding_cells, count)
         self.knowledge.append(sentence)
 
+
         for sentence in self.knowledge:
             if not sentence.cells: self.knowledge.remove(sentence)
 
-            if sentence.known_safes():
-                known_safes = sentence.known_safes().copy()
-                for cell in known_safes:
-                    self.mark_safe(cell)
+            known_safes = sentence.known_safes().copy()
+            for cell in known_safes:
+                self.mark_safe(cell)
 
-            if sentence.known_mines():
-                known_mines = sentence.known_mines().copy()
-                for cell in known_mines:
-                    self.mark_mine(cell)
+            known_mines = sentence.known_mines().copy()
+            for cell in known_mines:
+                self.mark_mine(cell)
 
 
 
