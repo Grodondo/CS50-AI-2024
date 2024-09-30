@@ -107,6 +107,7 @@ class Sentence():
         """
         if len(self.cells) == self.count:
             return self.cells
+        return set()
 
 
     def known_safes(self):
@@ -115,7 +116,8 @@ class Sentence():
         """
         if self.count == 0:
             return self.cells
-        
+        return set()
+
     def mark_mine(self, cell):
         """
         Updates internal knowledge representation given the fact that
@@ -207,7 +209,7 @@ class MinesweeperAI():
                     continue
 
                 # Update count if cell in bounds and is mine
-                if 0 <= i < self.height and 0 <= j < self.width:
+                if 0 <= i < self.height and 0 <= j < self.width and (i,j) not in (self.mines, self.safes):
                     surrounding_cells.add((i,j))
 
         sentence = Sentence(surrounding_cells, count)
@@ -216,12 +218,12 @@ class MinesweeperAI():
         for sentence in self.knowledge:
             if not sentence.cells: self.knowledge.remove(sentence)
 
-            if sentence.known_safes() != None:
+            if sentence.known_safes():
                 known_safes = sentence.known_safes().copy()
                 for cell in known_safes:
                     self.mark_safe(cell)
 
-            if sentence.known_mines() != None:
+            if sentence.known_mines():
                 known_mines = sentence.known_mines().copy()
                 for cell in known_mines:
                     self.mark_mine(cell)

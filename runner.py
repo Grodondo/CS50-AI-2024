@@ -213,6 +213,7 @@ while True:
     # Make move and update AI knowledge
     if move:
         if game.is_mine(move):
+            print(f"Mine exploded at {move}")
             lost = True
         else:
             nearby = game.nearby_mines(move)
