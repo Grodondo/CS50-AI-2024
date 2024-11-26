@@ -197,8 +197,8 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
         person_gene = (2 if person in two_genes else 1 if person in one_gene else 0)
         person_trait = (True if person in have_trait else False)
 
-        probabilities[person]["gene"][person_gene] *= p
-        probabilities[person]["trait"][person_trait] *= p
+        probabilities[person]["gene"][person_gene] += p
+        probabilities[person]["trait"][person_trait] += p
 
 
 
@@ -208,19 +208,14 @@ def normalize(probabilities):
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
     for person in probabilities:
-        genes = probabilities[person]["gene"][0], probabilities[person]["gene"][1], probabilities[person]["gene"][2]
-        traits = probabilities[person]["trait"][True], probabilities[person]["trait"][False]
 
-        #sum_gene = probabilities[person]["gene"][0] + probabilities[person]["gene"][1] + probabilities[person]["gene"][2]
-        #sum_trait = probabilities[person]["trait"][True] + probabilities[person]["trait"][False]
+        sum_gene = sum(probabilities[person]["gene"].values())
+        for gene in probabilities[person]["gene"]:
+            probabilities[person]["gene"][gene] /= sum_gene
 
-        probabilities[person]["gene"][0]  = (probabilities[person]["gene"][0] - genes.min()) / (genes.max() - genes.min())
-        probabilities[person]["gene"][1]  = (probabilities[person]["gene"][1] - genes.min()) / (genes.max() - genes.min())
-        probabilities[person]["gene"][2]  = (probabilities[person]["gene"][2] - genes.min()) / (genes.max() - genes.min())
-
-        probabilities[person]["trait"][True] = (probabilities[person]["trait"][True] - traits.min()) / (traits.max() - traits.min())
-        probabilities[person]["trait"][False] = (probabilities[person]["trait"][False] - traits.min()) / (traits.max() - traits.min())
-
+        sum_trait = sum(probabilities[person]["trait"].values())
+        for trait in probabilities[person]["trait"]:
+            probabilities[person]["trait"][trait] /= sum_trait
 
 
 if __name__ == "__main__":
