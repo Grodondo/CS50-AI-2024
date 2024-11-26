@@ -147,7 +147,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         person_prob = 1
         person_gene = (1 if person in one_gene else 2 if person in two_genes else 0)
         person_trait = person in have_trait
-        '''
+
         mother = people[person]["mother"]
         father = people[person]["father"]
 
@@ -176,49 +176,13 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             else:
                 # Probability that none passed the gene.
                 person_prob *= (1 - prob_mother_passed_gene) * (1 - prob_father_passed_gene)
-    '''
-        person_prob *= joint_probability_old(person, people, one_gene, two_genes, have_trait)
+
+        # Trait probability added
         person_prob *= PROBS["trait"][person_gene][person_trait]
 
         joint_prob *= person_prob        
     
     return joint_prob
-
-def joint_probability_old(person, people, one_gene, two_genes, have_trait):
-
-    person_prob = 1
-    person_gene = (1 if person in one_gene else 2 if person in two_genes else 0)
-
-    mother = people[person]["mother"]
-    father = people[person]["father"]
-
-    if(not mother and not father):
-        person_prob *= PROBS["gene"][person_gene]
-    else:
-        prob_mother_passed_gene = 1
-        prob_father_passed_gene = 1
-
-        if(mother):
-            mother_gene = joint_probability_old(mother, people, one_gene, two_genes, have_trait)
-            prob_mother_passed_gene = ((1 - PROBS['mutation']) if mother_gene is 2 else 0.5 if mother_gene is 1 else  PROBS['mutation'])
-            prob_mother_passed_gene_father_didnt = prob_mother_passed_gene * (1 - prob_father_passed_gene)
-
-        if(father):
-            father_gene = joint_probability_old(father, people, one_gene, two_genes, have_trait)
-            prob_father_passed_gene = ((1 - PROBS['mutation']) if father_gene is 2 else 0.5 if father_gene is 1 else  PROBS['mutation'])
-            prob_father_passed_gene_mother_didnt = (1 - prob_mother_passed_gene) * prob_father_passed_gene
-
-        if(person_gene == 2):
-            # Probability that both mother and father passed the gene.
-            person_prob *= prob_mother_passed_gene * prob_father_passed_gene
-        elif(person_gene == 1):
-            # Probability either mother passed the gene or father passed the gene.
-            person_prob *= prob_father_passed_gene_mother_didnt + prob_mother_passed_gene_father_didnt
-        else:
-            # Probability that none passed the gene.
-            person_prob *= (1 - prob_mother_passed_gene) * (1 - prob_father_passed_gene)
-    
-    return person_prob
     
 
 
