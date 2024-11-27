@@ -89,12 +89,13 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+    pagerank = {}
 
     for i in range(n):
         # First value always random and set its pagerank to 1
         if i == 0:
             page = random.choice(list(corpus.keys()))
-            pagerank = {page: 1}
+            pagerank[page] = 1
         else:
             prob_pages = transition_model(corpus, page, damping_factor)
 
@@ -102,17 +103,14 @@ def sample_pagerank(corpus, damping_factor, n):
 
             if page in pagerank:
                 pagerank[page] += 1
-                #pagerank += {page: 1}
             else:
                 pagerank[page] = 1 
-                #pagerank = {page: 1}
 
 
     # Normalize all values from pagerank
     total_samples = sum(pagerank.values())
     for page in pagerank:
         pagerank[page] /= (total_samples)
-        #pagerank = {page: pagerank[page]/(total_samples)}
 
     print('Sum of sample page ranks: ', round(total_samples, 4))
     for page in pagerank:
@@ -130,17 +128,19 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    print('Start iterate_pagerank')
     page_rank = {}
 
     init_rank = 1 / (len(corpus))
     max_rank = init_rank
     iterations = 0
 
+    # Initialize all page ranks to 1/N
     for page in corpus:
         page_rank[page] = init_rank
     
+    # Choose a random page to start
     page = random.choice(list(corpus.keys()))
+    # Iterate until the difference between the old and new ranks is less than 0.001
     while(max_rank > 0.001):
         iterations += 1
         max_rank = 0
@@ -159,7 +159,7 @@ def iterate_pagerank(corpus, damping_factor):
 
 
 
-    return sample_pagerank(corpus, damping_factor, 10000)
+    return page_rank
 
 if __name__ == "__main__":
     main()
