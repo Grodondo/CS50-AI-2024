@@ -121,14 +121,16 @@ class CrosswordCreator():
             return False
         
         words_to_delete = []
+
         # We look through all of the words inside the domains of the variables[x,y]
         for word_in_dom_x in self.domains[x]:
+            word_is_consistent = False
             for word_in_dom_y in self.domains[y]:
                 # We check if the overlapping characters in both words are the same
                 if word_in_dom_x[overlap[0]] == word_in_dom_y[overlap[1]]:
-                    word_works = True
+                    word_is_consistent = True
                     break
-            if word_works:
+            if word_is_consistent is False:
                 words_to_delete.append(word_in_dom_x)
                 revised = True
                             
@@ -137,8 +139,7 @@ class CrosswordCreator():
                     
         # We remove all of the words that did not match from the domain of X
         for word in words_to_delete:
-            if word in self.domains[x]:
-                self.domains[x].remove(word)
+            self.domains[x].remove(word)
 
         return revised
     
