@@ -187,14 +187,17 @@ class CrosswordCreator():
         puzzle without conflicting characters); return False otherwise.
         """
 
+        # Ensures that all values are distinct
         words_in_assignment = list(assignment.values())
         if len(words_in_assignment) != len(set(words_in_assignment)):
             return False
 
+        # Ensures that all words have the correct length
         for var, word in assignment.items():
-            if var.lenght != len(word):
+            if var.length != len(word):
                 return False
 
+        # Ensures that there are no conflicts between neighboring variables
         for var in assignment.keys():
             for neighbor in self.crossword.neighbors(var):
                     overlap = self.crossword.overlaps[neighbor, var]
