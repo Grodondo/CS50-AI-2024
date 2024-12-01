@@ -99,7 +99,6 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        # TODO Revisar
         for var in self.crossword.variables:
             for word in self.crossword.words:
                 if len(word) != var.length:
@@ -126,10 +125,13 @@ class CrosswordCreator():
         for word_in_dom_x in self.domains[x]:
             for word_in_dom_y in self.domains[y]:
                 # We check if the overlapping characters in both words are the same
-                if word_in_dom_x[overlap[0]] != word_in_dom_y[overlap[1]]:
-                    words_to_delete.append(word_in_dom_x)
-                    revised = True
-                    break                    
+                if word_in_dom_x[overlap[0]] == word_in_dom_y[overlap[1]]:
+                    word_works = True
+                    break
+            if word_works:
+                words_to_delete.append(word_in_dom_x)
+                revised = True
+                            
 
                     
                     
