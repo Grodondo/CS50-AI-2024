@@ -200,17 +200,15 @@ class CrosswordCreator():
         # Ensures that there are no conflicts between neighboring variables
         for var in assignment.keys():
             for neighbor in self.crossword.neighbors(var):
-                    overlap = self.crossword.overlaps[neighbor, var]
-                    if overlap is None:
-                        return False
+                # Only check neighbors that are assigned
+                if neighbor in assignment:
+                    overlap = self.crossword.overlaps.get((var, neighbor))
+                    if overlap is not None:
+                        # Compare overlapping characters
+                        i, j = overlap
+                        if assignment[var][i] != assignment[neighbor][j]:
+                            return False
                     
-                    """
-                    # We look through all of the words inside the domains of the variables[x,y]
-                    for word_in_dom_n in self.domains[neighbor]:
-                        for word_in_dom_v in self.domains[var]:
-                            # We check if the overlapping characters in both words are the same
-                            if word_in_dom_n[overlap[0]] != word_in_dom_v[overlap[1]]:
-                    """
 
         return True
 
