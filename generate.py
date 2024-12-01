@@ -165,9 +165,7 @@ class CrosswordCreator():
                     return False
                 for neighbor_x in self.crossword.neighbors(x):
                     if neighbor_x is not y:
-                        queue.append(neighbor_x, x)
-                #TODO for each Z in X.neighbors - {Y}:
-                    #Enqueue(queue, (Z,X))
+                        queue.append((neighbor_x, x))
         return True
 
 
