@@ -59,7 +59,69 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+
+    Month = {
+        "Jan": 0,
+        "Feb": 1,
+        "Mar": 2,
+        "Apr": 3,
+        "May": 4,
+        "June": 5,
+        "Jul": 6,
+        "Aug": 7,
+        "Sep": 8,
+        "Oct": 9,
+        "Nov": 10,
+        "Dec": 11
+    }
+
+    evidences = []
+    labels = []
+    with open(filename, "r") as file:
+        file_csv = csv.reader(file)
+        # We ignore the first row
+        next(file_csv)
+        for row in file_csv:
+            evidence = []
+            # Administrative, an integer            
+            evidence.append(int(row[0]))
+            # Administrative_Duration, a floating point number
+            evidence.append(float(row[1]))
+            # Informational, an integer
+            evidence.append(int(row[2]))
+            # Informational_Duration, a floating point number
+            evidence.append(float(row[3]))
+            # ProductRelated, an integer
+            evidence.append(int(row[4]))
+            # ProductRelated_Duration, a floating point number
+            evidence.append(float(row[5]))
+            # BounceRates, a floating point number
+            evidence.append(float(row[6]))
+            # ExitRates, a floating point number
+            evidence.append(float(row[7]))
+            # PageValues, a floating point number
+            evidence.append(float(row[8]))
+            # SpecialDay, a floating point number
+            evidence.append(float(row[9]))
+            # Month, an index from 0 (January) to 11 (December)
+            evidence.append(int(Month[row[10]]))
+            # OperatingSystems, an integer
+            evidence.append(int(row[11]))
+            # Browser, an integer
+            evidence.append(int(row[12]))
+            # Region, an integer
+            evidence.append(int(row[13]))
+            # TrafficType, an integer
+            evidence.append(0 if row[14] == "New_Visitor" else 1)
+            # VisitorType, an integer 0 (not returning) or 1 (returning)
+            evidence.append(0 if row[15] == "FALSE" else 1)
+            # Weekend, an integer 0 (if false) or 1 (if true)
+            evidence.append(0 if row[16] == "FALSE" else 1)
+
+            evidences.append(evidence)
+            labels.append(1 if row[17] == "TRUE" else 0)
+
+    return evidences, labels
 
 
 def train_model(evidence, labels):
@@ -67,7 +129,17 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+
+    if len(evidence) != len(labels):
+        raise ValueError("Evidence and labels must have the same length")
+    if len(evidence) == 0 or len(labels) == 0:
+        raise ValueError("Evidence and labels must not be empty.")
+
+    model = KNeighborsClassifier(n_neighbors=1)
+    model.fit(evidence, labels)
+
+    return model
+
 
 
 def evaluate(labels, predictions):
@@ -85,8 +157,24 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+   
+    sensitivity = 0
+    specificity = 0
 
+    cont = 0
+    for label in labels:
+        if label == 0:
+            if predictions[cont] == label:
+                specificity += 1
+        else:
+            if predictions[cont] == label:
+                sensitivity += 1
+        cont+=1
+
+    sensitivity /= len(labels)
+    specificity /= len(labels)
+
+    return sensitivity, specificity
 
 if __name__ == "__main__":
     main()
