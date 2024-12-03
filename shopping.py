@@ -112,9 +112,9 @@ def load_data(filename):
             # Region, an integer
             evidence.append(int(row[13]))
             # TrafficType, an integer
-            evidence.append(0 if row[14] == "New_Visitor" else 1)
+            evidence.append(int(row[14]))
             # VisitorType, an integer 0 (not returning) or 1 (returning)
-            evidence.append(0 if row[15] == "FALSE" else 1)
+            evidence.append(0 if row[15] == "New_Visitor" else 1)
             # Weekend, an integer 0 (if false) or 1 (if true)
             evidence.append(0 if row[16] == "FALSE" else 1)
 
@@ -158,21 +158,26 @@ def evaluate(labels, predictions):
     actual negative labels that were accurately identified.
     """
    
-    sensitivity = 0
-    specificity = 0
+    true_positives = 0
+    false_negatives = 0
+    true_negatives = 0
+    false_positives = 0
 
-    cont = 0
-    for label in labels:
-        if label == 0:
-            if predictions[cont] == label:
-                specificity += 1
+    for label, prediction in zip(labels, predictions):
+        if label == 1:
+            if prediction == label:
+                true_positives += 1
+            else:
+                false_negatives += 1
         else:
-            if predictions[cont] == label:
-                sensitivity += 1
-        cont+=1
+            if prediction == label:
+                true_negatives += 1
+            else:
+                false_negatives += 1
 
-    sensitivity /= len(labels)
-    specificity /= len(labels)
+
+    sensitivity = true_positives / (true_positives + false_positives)
+    specificity = true_negatives / (true_negatives + false_negatives)
 
     return sensitivity, specificity
 
