@@ -168,7 +168,7 @@ def evaluate(labels, predictions):
             if prediction == label:
                 true_positives += 1
             else:
-                false_negatives += 1
+                false_positives += 1
         else:
             if prediction == label:
                 true_negatives += 1
