@@ -102,13 +102,10 @@ class NimAI:
         If no Q-value exists yet in `self.q`, return 0.
         """
 
-        if len(self.q) is 0:
+        if len(self.q) == 0:
             return 0
 
-        if self.q[(state, action)] is not None:
-            return self.q[(state, action)]
-
-        return 0
+        return self.q.get((state, action), 0)
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -141,14 +138,7 @@ class NimAI:
         `state`, return 0.
         """
 
-        actions = []
-
-        row_count = 0
-        for row in state:
-            if row > 0:
-                for i in range(1, row + 1):
-                    actions.append(row_count, i)
-            row_count += 1
+        actions = Nim.available_actions(state)
 
         if len(actions) == 0:
             return 0
@@ -161,6 +151,31 @@ class NimAI:
                 max_q_value = self.q[state, action]
 
         return max_q_value
+
+    def available_actions(self, state):
+        actions = []
+
+        row_count = 0
+        for row in state:
+            if row > 0:
+                for i in range(1, row + 1):
+                    actions.append(row_count, i)
+            row_count += 1
+
+        return actions
+
+    def best_action(self, state):
+        actions = self.available_actions(state)
+        max_q_value = None
+        best_action = None
+
+        for action in actions:
+            q_value = self.get_q_value(state, action)
+            if max_q_value is None or q_value > max_q_value:
+                max_q_value = q_value
+                best_action = action
+
+        return best_action
 
     def choose_action(self, state, epsilon=True):
         """
@@ -177,7 +192,14 @@ class NimAI:
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
+
+        actions = self.available_actions(state)
+
+        if epsilon is False:
+            return self.best_action(state)
+
+        if random.random() >= self.epsilon:
+            return random.choice(actions)
 
 
 def train(n):
