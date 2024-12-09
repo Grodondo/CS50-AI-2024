@@ -105,7 +105,7 @@ class NimAI:
         if len(self.q) == 0:
             return 0
 
-        return self.q.get((state, action), 0)
+        return self.q.get((tuple(state), tuple(action)), 0)
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -122,10 +122,9 @@ class NimAI:
         `alpha` is the learning rate, and `new value estimate`
         is the sum of the current reward and estimated future rewards.
         """
+        args = (tuple(state), tuple(action))
 
-        self.q[(state, action)] = old_q + self.alpha * (
-            (reward + future_rewards) - old_q
-        )
+        self.q[args] = old_q + self.alpha * ((reward + future_rewards) - old_q)
 
     def best_future_reward(self, state):
         """
@@ -143,15 +142,24 @@ class NimAI:
         if len(actions) == 0:
             return 0
 
-        max_q_value = None
+        max_q_value = 0
         for action in actions:
-            if self.q[state, action] is None:
-                self.q[state, action] = 0
-            if max_q_value <= self.q[state, action]:
-                max_q_value = self.q[state, action]
+            q_value = self.q.get((tuple(state), tuple(action)), 0)
+            q_value = 0 if q_value is None else q_value
 
+            self.q[(tuple(state), tuple(action))] = q_value
+
+            if q_value > max_q_value:
+                max_q_value = q_value
+            """
+            if self.q[(tuple(state), action)] is None:
+                self.q[(tuple(state), action)] = 0
+            if max_q_value <= self.q[(tuple(state), action)]:
+                max_q_value = self.q[(tuple(state), action)]
+            """
         return max_q_value
 
+    @DeprecationWarning
     def available_actions(self, state):
         actions = []
 
@@ -159,13 +167,13 @@ class NimAI:
         for row in state:
             if row > 0:
                 for i in range(1, row + 1):
-                    actions.append(row_count, i)
+                    actions.append((row_count, i))
             row_count += 1
 
         return actions
 
     def best_action(self, state):
-        actions = self.available_actions(state)
+        actions = Nim.available_actions(state)
         max_q_value = None
         best_action = None
 
@@ -192,14 +200,16 @@ class NimAI:
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        #
-        actions = self.available_actions(state)
+
+        actions = Nim.available_actions(state)
 
         if epsilon is False:
             return self.best_action(state)
 
         if random.random() >= self.epsilon:
-            return random.choice(actions)
+            return random.choice(tuple(actions))
+        else:
+            return self.best_action(state)
 
 
 def train(n):
